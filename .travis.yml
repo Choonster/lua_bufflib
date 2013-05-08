@@ -1,19 +1,32 @@
-language: C
+language: c
+
+env:
+  global:
+    - LUA_CPATH="$PWD/?.so"
+  matrix:
+    - LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1
+    - LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2
+    - LUA=luajit LUA_INCDIR=/usr/include/luajit-2.0
 
 branches:
   only:
     - master
 
+before_install: 
+  - sudo add-apt-repository ppa:mwild1/ppa -y
+  - sudo apt-get update -y
+	
 install:
-  - sudo apt-get install libluajit-5.1-dev
-  - sudo apt-get install luajit
-  - sudo apt-get install luarocks
-  - sudo luarocks make
+  - sudo apt-get install luajit -y
+  - sudo apt-get install libluajit-5.1-dev -y
+  - sudo apt-get install lua5.1
+  - sudo apt-get install liblua5.1-dev
+  - sudo apt-get install lua5.2
+  - sudo apt-get install liblua5.2-dev
 
 script:
-  - lua -v test_bufflib.lua
-  - which luajit
-  - luajit -v test_bufflib.lua
+  - cc -ansi -I $LUA_INCDIR -o bufflib.so lua_bufflib.c
+  - $LUA -v test_bufflib.lua
 
 notifications:
   recipients:
