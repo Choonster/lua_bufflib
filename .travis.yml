@@ -9,7 +9,7 @@ install:
   - sudo apt-get install luarocks
   - sudo luarocks make
 
-script: lua test_bufflib.c
+script: lua test_bufflib.lua
 
 notifications:
   recipients:
