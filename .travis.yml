@@ -2,7 +2,7 @@
 
 env:
   global:
-    - LUA_CPATH="$PWD/?.so"
+    - LUA_CPATH="/home/travis/build/Choonster/lua_bufflib/?.so"
     - LUA_LIBDIR=/usr/lib/x86_64-linux-gnu/
   matrix:
     - "LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1 LUA_LIB=lua5.1"
