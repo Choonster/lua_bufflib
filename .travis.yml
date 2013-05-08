@@ -3,10 +3,15 @@
 env:
   global:
     - LUA_CPATH="$PWD/?.so"
+    - LUA_LIBDIR=/usr/lib/x86_64-linux-gnu/
   matrix:
-    - "LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1"
-    - "LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2"
-    - "LUA=luajit LUA_INCDIR=/usr/include/luajit-2.0"
+    - "LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1 LUA_LIB=lua5.1"
+    - "LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2 LUA_LIB=lua5.2"
+    - "LUA=luajit LUA_INCDIR=/usr/include/luajit-2.0 LUA_LIB=luajit-5.1"
+
+compiler:
+  - gcc
+  - clang
 
 branches:
   only:
@@ -26,7 +31,8 @@ install:
   - "sudo apt-get install liblua5.2-dev"
 
 script:
-  - "cc -ansi -I $LUA_INCDIR -o bufflib.so lua_bufflib.c"
+  - "$CC -ansi -O2 -fPIC -I $LUA_INCDIR -L $LUA_LIBDIR -l$LUA_LIB -c lua_bufflib.c -o bufflib.o"
+  - "$CC -shared -o bufflib.so bufflib.o"
   - "$LUA -v test_bufflib.lua"
 
 notifications:
