@@ -2,7 +2,7 @@ language: c
 
 env:
   global:
-    - LUA_CPATH="$PWD/?.so"
+    - LUA_CPATH=$PWD/?.so
   matrix:
     - LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1
     - LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2
