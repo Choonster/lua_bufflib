@@ -5,12 +5,14 @@ branches:
     - master
 
 install:
+  - sudo apt-get install libluajit-5.1-dev
   - sudo apt-get install luajit
   - sudo apt-get install luarocks
   - sudo luarocks make
 
 script:
   - lua -v test_bufflib.lua
+  - which luajit
   - luajit -v test_bufflib.lua
 
 notifications:
