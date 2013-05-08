@@ -9,10 +9,6 @@ env:
     - "LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2 LUA_LIB=lua5.2"
     - "LUA=luajit LUA_INCDIR=/usr/include/luajit-2.0 LUA_LIB=luajit-5.1"
 
-# compiler:
-# - gcc
-# - clang
-
 branches:
   only:
     - master
