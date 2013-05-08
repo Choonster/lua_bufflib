@@ -1,4 +1,6 @@
-﻿lua_bufflib
+﻿[![Build Status](https://travis-ci.org/Choonster/lua_bufflib.png)](https://travis-ci.org/Choonster/lua_bufflib)
+
+lua_bufflib
 ===========
 lua_bufflib is a library that provides string buffers for Lua 5.1 and 5.2. The buffer code is largely based on Lua 5.2's [luaL_Buffer][] code.
 
