@@ -1,8 +1,10 @@
 --[[
 static struct luaL_Reg metareg[] = {
 	{"__concat", bufflib_concat},
+	{"__eq", bufflib_equal},
 	{"__len", bufflib_len},
 	{"__tostring", bufflib_tostring},
+	{"__gc", bufflib_gc},
 	{"add", bufflib_add},
 	{"addsep", bufflib_addsep},
 	{"reset", bufflib_reset},
@@ -12,6 +14,7 @@ static struct luaL_Reg metareg[] = {
 static struct luaL_Reg libreg[] = {
 	{"add", bufflib_add},
 	{"addsep", bufflib_addsep},
+	{"equal", bufflib_equal},
 	{"concat", bufflib_concat},
 	{"length", bufflib_len},
 	{"new", bufflib_newbuffer},
@@ -63,7 +66,7 @@ assert(tostring(bufflib.new(teststr, testtab) .. bufflib.new(testfunc)) == (test
 do
 	local buffstr = tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab))
 	local resstr = testlongstr .. testfuncstr .. teststr .. testtabstr
-	assert(buffstr == resstr, ("%q ~= %q"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), resstr:sub(1, 25) .. "..." .. resstr:sub(-25)))
+	assert(buffstr == resstr, ("%q (len %d) ~= %q (len %d)"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), #buffstr, resstr:sub(1, 25) .. "..." .. resstr:sub(-25), #resstr))
 end
 
 -- Equality checks
