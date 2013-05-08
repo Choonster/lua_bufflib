@@ -17,7 +17,6 @@ before_install:
   - "sudo add-apt-repository ppa:mwild1/ppa -y"
   - "sudo apt-get update -y"
 
-
 install:
   - "sudo apt-get install luajit -y"
   - "sudo apt-get install libluajit-5.1-dev -y"
