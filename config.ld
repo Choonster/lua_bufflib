@@ -1,4 +1,4 @@
-﻿file = "lua_bufflib.c"
+file = "lua_bufflib.c"
 project = "lua_bufflib"
 title = "lua_bufflib Documentation"
 format = "markdown"
