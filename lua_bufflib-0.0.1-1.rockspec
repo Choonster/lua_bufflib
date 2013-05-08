@@ -29,7 +29,7 @@ dependencies = {
 }
 
 source = {
-	url = "https://github.com/Choonster/lua_bufflib/archive/lua_bufflib-0.0.1-1.tar.gz"
+	url = "https://github.com/Choonster/lua_bufflib/archive/0.0.1-1.tar.gz"
 }
 
 build = {
