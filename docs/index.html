@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>lua_bufflib Documentation</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>lua_bufflib</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Class_Buffer_">Class Buffer </a></li>
+<li><a href="#Buffer_Manipulation_">Buffer Manipulation </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul>
+  <li><strong>bufflib</strong></li>
+</ul>
+<h2>Topics</h2>
+<ul>
+  <li><a href="topics/readme.md.html">readme.md</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>bufflib</code></h1>
+
+<p>A library for string buffers in Lua.</p>
+<p>
+
+
+<p>The buffer code in this library is largely adapted from Lua 5.2's luaL<em>Buffer code.
+The main difference is that Buffers store their contents in the registry instead of the stack when their length exceeds LUAL</em>BUFFERSIZE.
+This prevents the C char array holding the current contents from being garbage collected until a larger array is required or the Buffer is reset.
+You don't need to know any of this to use the library, it's just extra information for people curious about the implementation.</p>
+
+<p>Just like regular strings in Lua, string buffers can contain embedded nulls (\0).</p>
+
+<p>Similar Lua's I/O library, most Buffer methods can be called as <code>buff:method(...)</code> or <code>bufflib.method(buff, ...)</code> (where <code>buff</code> is a Buffer).</p>
+
+<p>Buffers define metamethods for length (#), concatenation (..) and tostring(). See the documentation of each method for details.</p>
+<pre><code>
+</code></pre>
+</p>
+
+
+<h2><a href="#Class_Buffer_">Class Buffer </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:add">Buffer:add&nbsp;(...)</a></td>
+	<td class="summary">Add some strings to the <a href="index.html#Class_Buffer">Buffer</a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:addsep">Buffer:addsep&nbsp;(sep, ...)</a></td>
+	<td class="summary">Add some strings to the <a href="index.html#Class_Buffer">Buffer</a>, each separated by the specified separator string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:reset">Buffer:reset&nbsp;()</a></td>
+	<td class="summary">Reset the <a href="index.html#Class_Buffer">Buffer</a> to its initial (empty) state.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:__tostring">Buffer:__tostring&nbsp;()</a></td>
+	<td class="summary">Converts the <a href="index.html#Class_Buffer">Buffer</a> to a string representing its current conents.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:__len">Buffer:__len&nbsp;()</a></td>
+	<td class="summary">Metamethod for the <code>#</code> (length) operation.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:__concat">Buffer:__concat&nbsp;(B)</a></td>
+	<td class="summary">Metamethod for the <code>..</code> (concatenation) operation.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:__eq">Buffer:__eq&nbsp;(buff2)</a></td>
+	<td class="summary">Metamethod for the <code>==</code> (equality) operation.</td>
+	</tr>
+</table>
+<h2><a href="#Buffer_Manipulation_">Buffer Manipulation </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#newbuffer">newbuffer&nbsp;( [...])</a></td>
+	<td class="summary">Creates a new Buffer object, optionally adding some strings to the new Buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#isbuffer">isbuffer&nbsp;(arg)</a></td>
+	<td class="summary">Tests whether or not the argument is a <a href="index.html#Class_Buffer">Buffer</a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#add">add&nbsp;(buff, ...)</a></td>
+	<td class="summary">Equivalent to <a href="index.html#Buffer:add"><code>buff:add(...)</code></a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#addsep">addsep&nbsp;(buff, sep, ...)</a></td>
+	<td class="summary">Equivalent to <a href="index.html#Buffer:addsep"><code>buff:addsep(sep, ...)</code></a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#length">length&nbsp;(The)</a></td>
+	<td class="summary">Equivalent to <code>#buff</code> or <a href="index.html#Buffer:__len"><code>buff:\_\_len()</code></a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#reset">reset&nbsp;(The)</a></td>
+	<td class="summary">Equivalent to <a href="index.html#Buffer:reset"><code>buff:reset()</code></a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tostring">tostring&nbsp;(The)</a></td>
+	<td class="summary">Equivalent to <code>tostring(buff)</code> or <a href="index.html#Buffer:__tostring"><code>buff:\_\_tostring()</code></a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#concat">concat&nbsp;(buff1, buff2)</a></td>
+	<td class="summary">Equivalent to `buff1 ..</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#equal">equal&nbsp;(A, Another)</a></td>
+	<td class="summary">Equivalent to <code>buff1 == buff2</code> or <a href="index.html#Buffer:__eq"><code>buff1:\_\_eq(buff2)</code></a>.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Class_Buffer_"></a>Class Buffer </h2>
+        A class representing a string buffer.
+    <dl class="function">
+    <dt>
+    <a name = "Buffer:add"></a>
+    <strong>Buffer:add&nbsp;(...)</strong>
+    </dt>
+    <dd>
+    Add some strings to the <a href="index.html#Class_Buffer">Buffer</a>.
+All non-string arguments are converted to strings following the same rules as the tostring() function.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Some values to add to the Buffer.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:addsep"></a>
+    <strong>Buffer:addsep&nbsp;(sep, ...)</strong>
+    </dt>
+    <dd>
+    Add some strings to the <a href="index.html#Class_Buffer">Buffer</a>, each separated by the specified separator string.
+All non-string arguments are converted to strings following the same rules as the tostring() function.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">sep</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The string to use as a separator.</li>
+        <li><span class="parameter">...</span>
+         Some values to add to the Buffer.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:reset"></a>
+    <strong>Buffer:reset&nbsp;()</strong>
+    </dt>
+    <dd>
+    Reset the <a href="index.html#Class_Buffer">Buffer</a> to its initial (empty) state.
+If the Buffer was storing its contents in the registry, this is removed so it can be garbage collected.
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:__tostring"></a>
+    <strong>Buffer:__tostring&nbsp;()</strong>
+    </dt>
+    <dd>
+    Converts the <a href="index.html#Class_Buffer">Buffer</a> to a string representing its current conents.
+The Buffer remains unchanged.
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The contents of the Buffer
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:__len"></a>
+    <strong>Buffer:__len&nbsp;()</strong>
+    </dt>
+    <dd>
+    Metamethod for the <code>#</code> (length) operation.
+Returns the length of the <a href="index.html#Class_Buffer">Buffer</a>'s current contents.
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">int</span></span>
+        length
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:__concat"></a>
+    <strong>Buffer:__concat&nbsp;(B)</strong>
+    </dt>
+    <dd>
+    Metamethod for the <code>..</code> (concatenation) operation.
+If both arguments are <a href="index.html#Class_Buffer">Buffers</a>, creates a new Buffer from their joined contents.
+Otherwise adds a value to the Buffer, converting it to a string following the same rules as the tostring() function.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">B</span>
+         A Buffer to concatenate with this one or some value to to add to it.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        Either the new Buffer created from the two Buffer arguments or the Buffer that the non-Buffer argument was added to.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:__eq"></a>
+    <strong>Buffer:__eq&nbsp;(buff2)</strong>
+    </dt>
+    <dd>
+    Metamethod for the <code>==</code> (equality) operation.
+Returns true if the <a href="index.html#Class_Buffer">Buffers</a> hold the same contents, false if they don't.
+The contents of each Buffer are converted to Lua strings and then the two strings are compared to obtain the result.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buff2</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         The Buffer to compare with this one.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">bool</span></span>
+        equal Do the Buffers hold the same contents?
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Buffer_Manipulation_"></a>Buffer Manipulation </h2>
+        Buffer Manipulation.
+    <dl class="function">
+    <dt>
+    <a name = "newbuffer"></a>
+    <strong>newbuffer&nbsp;( [...])</strong>
+    </dt>
+    <dd>
+    Creates a new Buffer object, optionally adding some strings to the new Buffer.
+All non-string arguments are converted to strings following the same rules as the tostring() function.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Some values to add to the new Buffer.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The new Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "isbuffer"></a>
+    <strong>isbuffer&nbsp;(arg)</strong>
+    </dt>
+    <dd>
+    Tests whether or not the argument is a <a href="index.html#Class_Buffer">Buffer</a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">arg</span>
+         The value to check.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">bool</span></span>
+        Is this a Buffer?
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "add"></a>
+    <strong>add&nbsp;(buff, ...)</strong>
+    </dt>
+    <dd>
+    Equivalent to <a href="index.html#Buffer:add"><code>buff:add(...)</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buff</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         The Buffer to add the values to.</li>
+        <li><span class="parameter">...</span>
+         Some values to add to the Buffer.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "addsep"></a>
+    <strong>addsep&nbsp;(buff, sep, ...)</strong>
+    </dt>
+    <dd>
+    Equivalent to <a href="index.html#Buffer:addsep"><code>buff:addsep(sep, ...)</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buff</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         The Buffer to add the values to.</li>
+        <li><span class="parameter">sep</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The string to use as a separator.</li>
+        <li><span class="parameter">...</span>
+         Some values to add to the Buffer.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "length"></a>
+    <strong>length&nbsp;(The)</strong>
+    </dt>
+    <dd>
+    Equivalent to <code>#buff</code> or <a href="index.html#Buffer:__len"><code>buff:\_\_len()</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">The</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         Buffer to get the length of.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">int</span></span>
+        length
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "reset"></a>
+    <strong>reset&nbsp;(The)</strong>
+    </dt>
+    <dd>
+    Equivalent to <a href="index.html#Buffer:reset"><code>buff:reset()</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">The</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         Buffer to reset.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        The emptied Buffer object.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tostring"></a>
+    <strong>tostring&nbsp;(The)</strong>
+    </dt>
+    <dd>
+    Equivalent to <code>tostring(buff)</code> or <a href="index.html#Buffer:__tostring"><code>buff:\_\_tostring()</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">The</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         Buffer to convert to a string.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The Buffer's contents as a string.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "concat"></a>
+    <strong>concat&nbsp;(buff1, buff2)</strong>
+    </dt>
+    <dd>
+    Equivalent to <code>buff1 ..  buff2</code> or <a href="index.html#Buffer:__concat"><code>buff1:\_\_concat(buff2)</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buff1</span>
+         A Buffer or some other value.</li>
+        <li><span class="parameter">buff2</span>
+         A Buffer or some other value.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+        Either the new Buffer created from the Buffer arguments or the Buffer that the non-Buffer argument was added to.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "equal"></a>
+    <strong>equal&nbsp;(A, Another)</strong>
+    </dt>
+    <dd>
+    Equivalent to <code>buff1 == buff2</code> or <a href="index.html#Buffer:__eq"><code>buff1:\_\_eq(buff2)</code></a>.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">A</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         Buffer</li>
+        <li><span class="parameter">Another</span>
+            <span class="types"><a class="type" href="index.html#Class_Buffer">Buffer</a></span>
+         Buffer</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">bool</span></span>
+        Do the Buffers hold the same contents?
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.3</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
