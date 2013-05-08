@@ -59,7 +59,12 @@ assert(#bufflib.new(testlongstr, testtab, testfunc) == #(testlongstr .. testtabs
 assert(tostring(bufflib.new(teststr) .. bufflib.new(teststr)) == (teststr .. teststr))
 assert(tostring(bufflib.new(testtabstr) .. testtabstr) == (testtabstr .. testtabstr))
 assert(tostring(bufflib.new(teststr, testtab) .. bufflib.new(testfunc)) == (teststr .. testtabstr .. testfuncstr))
-assert(tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab)) == (testlongstr .. testfuncstr .. teststr .. testtabstr))
+
+do
+	local buffstr = tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab))
+	local resstr = testlongstr .. testfuncstr .. teststr .. testtabstr
+	assert(buffstr == resstr, ("%q ~= %q"):format(buffstr, resstr))
+end
 
 -- Equality checks
 assert(bufflib.new(teststr) == bufflib.new(teststr))
