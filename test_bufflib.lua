@@ -35,6 +35,8 @@ local testfunc = function() end
 local testfuncstr = tostring(testfunc)
 local testlongstr = teststr:rep(2000)
 
+print("Testing lua_bufflib. Initial buffer size: " .. bufflib.buffersize)
+
 -- Basic creation checks
 assert(type(bufflib.new()) == "userdata")
 assert(type(getmetatable(bufflib.new())) == "table")
