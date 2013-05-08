@@ -63,7 +63,7 @@ assert(tostring(bufflib.new(teststr, testtab) .. bufflib.new(testfunc)) == (test
 do
 	local buffstr = tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab))
 	local resstr = testlongstr .. testfuncstr .. teststr .. testtabstr
-	assert(buffstr == resstr, ("%q ~= %q"):format(buffstr, resstr))
+	assert(buffstr == resstr, ("%q ~= %q"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), resstr:sub(1, 25) .. "..." .. resstr:sub(-25)))
 end
 
 -- Equality checks
