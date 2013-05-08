@@ -1,0 +1,19 @@
+language: C
+
+branches:
+  only:
+    - master
+
+install:
+  - sudo apt-get install luajit
+  - sudo apt-get install luarocks
+  - sudo luarocks make
+
+script: lua test_bufflib.c
+
+notifications:
+  recipients:
+    - Choonster.2010@gmail.com
+  email:
+    on_success: change
+    on_failure: always

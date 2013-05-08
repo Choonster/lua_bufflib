@@ -1,5 +1,9 @@
 # VS build results
 VSProj/*/*.*
+*.def
+*.dll
+*.exp
+*.lib
 
 #################
 ## Eclipse
