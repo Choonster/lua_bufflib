@@ -36,5 +36,3 @@ notifications:
   email:
     on_failure: always
     on_success: change
-  recipients:
-    - Choonster.2010@gmail.com

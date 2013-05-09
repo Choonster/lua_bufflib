@@ -43,7 +43,7 @@ assert(tostring(bufflib.new(teststr, testtab) .. bufflib.new(testfunc)) == (test
 do
 	local buffstr = tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab))
 	local resstr = testlongstr .. testfuncstr .. teststr .. testtabstr
-	assert(buffstr == resstr, ("concatenation (buffer(long string, function) .. buffer(string, table)) faile -- %q (len %d) ~= %q (len %d)"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), #buffstr, resstr:sub(1, 25) .. "..." .. resstr:sub(-25), #resstr))
+	assert(buffstr == resstr, ("concatenation (buffer(long string, function) .. buffer(string, table)) failed -- %q (len %d) ~= %q (len %d)"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), #buffstr, resstr:sub(1, 25) .. "..." .. resstr:sub(-25), #resstr))
 end
 
 -- Equality checks
