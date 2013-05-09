@@ -1,4 +1,4 @@
-﻿#language: C
+﻿language: c
 
 env:
   global:
@@ -32,7 +32,11 @@ install:
 script:
   - "gcc -ansi -O2 -fPIC -I $LUA_INCDIR -L $LUA_LIBDIR -l$LUA_LIB -c lua_bufflib.c -o bufflib.o"
   - "gcc -shared -o bufflib.so bufflib.o"
-  - "echo $PWD && echo $CC"
+  - "echo $PWD"
+  - "echo '$CC'"
+  - "which cc"
+  - "which gcc"
+  - "which clang"
   - "ls bufflib.so"
   - "$LUA -v test_bufflib.lua"
 
