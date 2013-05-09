@@ -13,6 +13,10 @@ branches:
   only:
     - master
 
+compiler:
+  - "clang"
+  - "gcc"
+
 before_install:
   - "sudo add-apt-repository ppa:mwild1/ppa -y"
   - "sudo apt-get update -y"
@@ -28,7 +32,7 @@ install:
 script:
   - "gcc -ansi -O2 -fPIC -I $LUA_INCDIR -L $LUA_LIBDIR -l$LUA_LIB -c lua_bufflib.c -o bufflib.o"
   - "gcc -shared -o bufflib.so bufflib.o"
-  - "echo $PWD"
+  - "echo $PWD && echo $CC"
   - "ls bufflib.so"
   - "$LUA -v test_bufflib.lua"
 
