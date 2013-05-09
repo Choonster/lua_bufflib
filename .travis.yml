@@ -35,6 +35,7 @@ script:
   - "echo $PWD"
   - "echo $CC"
   - cat cc
+  - ls cc
   - "ls bufflib.so"
   - "$LUA -v test_bufflib.lua"
 
