@@ -18,7 +18,7 @@ compiler:
   - "gcc"
 
 before_install:
-  - "if [ $LUA = "luajit" ]; then sudo add-apt-repository ppa:mwild1/ppa -y && sudo apt-get update -y; fi"
+  - 'if [ $LUA = "luajit" ]; then sudo add-apt-repository ppa:mwild1/ppa -y && sudo apt-get update -y; fi'
 
 install:
   - "sudo apt-get install $LUA -y"
