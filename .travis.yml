@@ -34,8 +34,7 @@ script:
   - "gcc -shared -o bufflib.so bufflib.o"
   - "echo $PWD"
   - "echo $CC"
-  - cat cc
-  - ls cc
+  - which cc | cat
   - "ls bufflib.so"
   - "$LUA -v test_bufflib.lua"
 
