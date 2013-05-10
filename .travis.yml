@@ -5,9 +5,9 @@ env:
     - LUA_CPATH="/home/travis/build/Choonster/lua_bufflib/?.so"
     - LUA_LIBDIR=/usr/lib/x86_64-linux-gnu/
   matrix:
-    - "LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1 LUA_LIB=lua5.1"
-    - "LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2 LUA_LIB=lua5.2"
-    - "LUA=luajit LUA_INCDIR=/usr/include/luajit-2.0 LUA_LIB=luajit-5.1"
+    - "LUA=lua5.1 LIBLUA=liblua5.1-dev     LUA_INCDIR=/usr/include/lua5.1     LUA_LIB=lua5.1"
+    - "LUA=lua5.2 LIBLUA=liblua5.2-dev     LUA_INCDIR=/usr/include/lua5.2     LUA_LIB=lua5.2"
+    - "LUA=luajit LIBLUA=libluajit-5.1-dev LUA_INCDIR=/usr/include/luajit-2.0 LUA_LIB=luajit-5.1"
 
 branches:
   only:
@@ -18,23 +18,18 @@ compiler:
   - "gcc"
 
 before_install:
-  - "sudo add-apt-repository ppa:mwild1/ppa -y"
-  - "sudo apt-get update -y"
+  - "if [ $LUA = "luajit" ]; then sudo add-apt-repository ppa:mwild1/ppa -y && sudo apt-get update -y; fi"
 
 install:
-  - "sudo apt-get install luajit -y"
-  - "sudo apt-get install libluajit-5.1-dev -y"
-  - "sudo apt-get install lua5.1"
-  - "sudo apt-get install liblua5.1-dev"
-  - "sudo apt-get install lua5.2"
-  - "sudo apt-get install liblua5.2-dev"
+  - "sudo apt-get install $LUA -y"
+  - "sudo apt-get install $LIBLUA -y"
 
 script:
   - "gcc -ansi -O2 -fPIC -I $LUA_INCDIR -L $LUA_LIBDIR -l$LUA_LIB -c lua_bufflib.c -o bufflib.o"
   - "gcc -shared -o bufflib.so bufflib.o"
   - "echo $PWD"
   - "echo $CC"
-  - which cc | cat
+  - cat /usr/bin/cc
   - "ls bufflib.so"
   - "$LUA -v test_bufflib.lua"
 
