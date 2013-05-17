@@ -13,9 +13,9 @@ branches:
   only:
     - master
 
-compiler:
-  - "clang"
-  - "gcc"
+#compiler:
+#  - "clang"
+#  - "gcc"
 
 before_install:
   - 'if [ $LUA = "luajit" ]; then sudo add-apt-repository ppa:mwild1/ppa -y && sudo apt-get update -y; fi'

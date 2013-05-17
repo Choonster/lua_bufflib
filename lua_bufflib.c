@@ -33,11 +33,19 @@ The main difference is that Buffers store their contents in the registry instead
 This prevents the C char array holding the current contents from being garbage collected until a larger array is required or the Buffer is reset or garbage collected.
 You don't need to know any of this to use the library, it's just extra information for people curious about the implementation.
 
+
 Just like regular strings in Lua, string buffers can contain embedded nulls (\0).
+
 
 Similar to Lua's string library, most Buffer methods can be called as `buff:method(...)` or `bufflib.method(buff, ...)` (where `buff` is a Buffer).
 Note that not all methods use the same name in the Buffer metatable and the `bufflib` table.
 The primary examples of this are the metamethods, which use the required metamethod names in the metatable and more descriptive names in the `bufflib` table (e.g. the `__len` metamethod is the same as `bufflib.length`).
+
+
+In addition to the functions shown here, you can call any method from the global `string` table (not just functions from the string library) on a Buffer (either as a method or a function from the `bufflib` table) by prefixing the name with `s_`.
+When you call a Buffer method with the `s_` prefix, it behaves exactly the same as if you'd called the equivalent `string` function with the Buffer's contents as the first argument.
+
+For example, `bufflib.s_gsub(buff, ...)` and `buff:s_gsub(...)` are both equivalent to `str:gsub(...)` (where `buff` is a Buffer and `str` is the Buffer's contents as a string).
 
 Buffers define metamethods for equality (==), length (#), concatenation (..) and tostring(). See the documentation of each metamethod for details.
 
@@ -55,12 +63,17 @@ Buffers define metamethods for equality (==), length (#), concatenation (..) and
 #define EXPORT extern
 #endif
 
+/* The registry key used to store the Buffer metatable */
 #define BUFFERTYPE "bufflib_buffer"
+
+/* The prefix used to access string library methods on Buffers */
+#define STRINGPREFIX "s_"
+#define STRINGPREFIXLEN 2
 
 /*
 	Compatiblity with 5.1.
 	The functions in this section were copied from Lua 5.2's auxilary library.
- */
+*/
 #if LUA_VERSION_NUM < 502
 #define LIBNAME "bufflib"
 
@@ -401,7 +414,7 @@ static int bufflib_equal(lua_State *L){
 
 /*
 Garbage collection metamethod. This should never be called by the user, so it's not included in the documentation.
-If the Buffer is storing its contents as a userdata in the registry, unreferences it to allow it to be collected
+If the Buffer is storing its contents as a userdata in the registry, unreferences it; allowing it to be collected
 */
 static int bufflib_gc(lua_State *L){
 	Buffer *B = getbuffer(L, 1);
@@ -425,7 +438,7 @@ All non-string arguments are converted to strings following the same rules as th
 @param[opt] ... Some values to add to the new Buffer.
 @treturn Buffer The new Buffer object.
 */
-static int bufflib_newbuffer(lua_State *L) {
+static int bufflib_newbuffer(lua_State *L){
 	Buffer *B = newbuffer(L);
 	addstrings(B, 1, 1); /* Pass addstrings an offset of 1 to account for the new userdata at the top of the stack. */
 	return 1; /* The new Buffer is already on the stack */
@@ -438,9 +451,84 @@ Tests whether or not the argument is a @{Buffer}.
 @param arg The value to check.
 @treturn bool Is this a Buffer?
 */
-static int bufflib_isbuffer(lua_State *L) {
+static int bufflib_isbuffer(lua_State *L){
 	lua_pushboolean(L, isbuffer(L, 1));
 	return 1;
+}
+
+/*
+	Calls a function stored at upvalue 1 with the Buffer's string contents as the first argument and any other arguments passed to the function after that.
+*/
+static int bufflib_stringop(lua_State *L){
+	Buffer *B = getbuffer(L, 1);
+	int numargs = lua_gettop(L);
+	int i;
+	
+	lua_pushvalue(L, lua_upvalueindex(1)); /* String function to call */
+	lua_pushlstring(L, B->b, B->n); /* Buffer contents as a string */
+	for (i = 2; i < numargs; i++){ /* Remaining arguments */
+		lua_pushvalue(L, i);
+	}
+	
+	lua_call(L, numargs, LUA_MULTRET);
+	return lua_gettop(L) - numargs;
+}
+
+/*
+	Function for the __index metamethod.
+	First it looks up the key in the Buffer metatable and returns its value if it has one.
+	If the key doesn't exist in the metatable and it starts with "s_", looks up the rest of the key in the global table "string" (if it exists).
+	If the key's value is a function, creates a closure of the stringop function with the string function as the first upvalue.
+	This closure is stored with the original key in both the metatable and the library table and then returned.
+	Returns nil if the above conditions aren't met.
+*/
+static int bufflib_index(lua_State *L){
+	const char *key = luaL_checkstring(L, 2);
+	const char *pos, *strkey;
+	
+	lua_getmetatable(L, 1); /* Get the Buffer's metatable */
+	lua_getfield(L, -1, key); /* mt[key] */
+
+	if (!lua_isnil(L, -1)){ /* If the key exists in the metatable, return its value */
+		return 1; 
+	} else {
+		lua_pop(L, 1); /* Pop the nil from the stack */
+	}
+	
+	pos = strstr(key, STRINGPREFIX);
+	if (pos == NULL || (pos - key) != 0){ /* If the key doesn't start with "s_", return nil */
+		lua_pushnil(L);
+		return 1;
+	}
+
+	lua_getglobal(L, "string");
+	if (!lua_istable(L, -1)){ /* If there's no string table, return nil */
+		lua_pushnil(L);
+		return 1;
+	}
+	
+	strkey = key + STRINGPREFIXLEN; /* Move past the prefix */
+	lua_getfield(L, -1, strkey); /* _G.string[strkey] */
+	lua_remove(L, -2); /* Remove the string table */
+	
+	if (!lua_isfunction(L, -1)){ /* If there's no function at strkey, return nil */
+		lua_pushnil(L);
+		return 1;
+	}
+
+	lua_pushcclosure(L, bufflib_stringop, 1); /* Push the stringop function as a closure with the string function as the first upvalue */
+	
+	lua_pushvalue(L, -1); /* Push a copy of the closure */
+	lua_setfield(L, 3, key); /* mt[key] = closure (Pops the first copied closure) */
+	
+	lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+	lua_getfield(L, -1, "bufflib");
+
+	lua_pushvalue(L, -3); /* Push a second copy of the closure */
+	lua_setfield(L, -2, key); /* bufflib[key] = closure (Pops the second copied closure) */
+	lua_pop(L, 2); /* Pop the _LOADED and bufflib tables */
+
+	return 1; /* Return the original closure */
 }
 
 /**
@@ -530,12 +618,48 @@ static struct luaL_Reg libreg[] = {
 };
 
 EXPORT int luaopen_bufflib(lua_State *L) {
+	int strIndex, metaIndex, libIndex;
+
 	luaL_newmetatable(L, BUFFERTYPE);
 	luaL_setfuncs(L, metareg, 0);
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "__index"); /* mt.__index = mt */
+	lua_pushcfunction(L, bufflib_index);
+	lua_setfield(L, -2, "__index"); /* mt.__index = bufflib_index */
 	luaL_newlib(L, libreg);
 	lua_pushinteger(L, LUAL_BUFFERSIZE);
 	lua_setfield(L, -2, "buffersize");
-	return 1;
+	
+	lua_getglobal(L, "string");
+	if (lua_isnil(L, -1)){ /* If there's no string table, return now */
+		lua_pop(L, 1);
+		return 1;
+	}
+	
+	strIndex = lua_gettop(L); /* lua_next probably won't like relative (negative) indices, so record the absolute index of the string table */
+	metaIndex = strIndex - 2;
+	libIndex = strIndex - 1;
+	
+	lua_pushnil(L);
+	while (lua_next(L, strIndex) != 0){
+		const char *newkey;
+		if (lua_type(L, -2) != LUA_TSTRING || !lua_isfunction(L, -1)){ /* If the key isn't a string or the value isn't a function, pop the value and jump to the next pair */
+			lua_pop(L, 1);
+			continue;
+		}
+		
+		lua_pushliteral(L, STRINGPREFIX); /* Push the prefix string */
+		lua_pushvalue(L, -3); /* Push a copy of the key */
+		lua_concat(L, 2); /* prefix .. key (pops the two strings)*/
+		newkey = lua_tostring(L, -1);
+		lua_pop(L, 1); /* Pop the new string */
+		
+		lua_pushcclosure(L, bufflib_stringop, 1); /* Push the stringop function as a closure with the string function as the first upvalue */
+		lua_pushvalue(L, -1); /* Push a copy of the closure */
+				
+		lua_setfield(L, metaIndex, newkey); /* Pops the copied closure */
+		lua_setfield(L, libIndex, newkey); /* Pops the original closure, the original key is left on the top of the stack */
+	}
+	
+	lua_pop(L, 1); /* Pop the string table */
+
+	return 1; /* Return the library table */
 }
