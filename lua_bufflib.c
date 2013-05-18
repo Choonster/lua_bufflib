@@ -43,7 +43,7 @@ The primary examples of this are the metamethods, which use the required metamet
 
 
 In addition to the functions shown here, you can call any method from the global `string` table (not just functions from the string library) on a Buffer (either as a method or a function from the `bufflib` table) by prefixing the name with `s_`.
-When you call a Buffer method with the `s_` prefix, it behaves exactly the same as if you'd called the equivalent `string` function with the Buffer's contents as the first argument.
+When you call a Buffer method with the `s_` prefix, it calls the equivalent `string` function with the Buffer's contents as the first argument followed by any other arguments supplied to the method. None of these methods modify the original Buffer.
 
 For example, `bufflib.s_gsub(buff, ...)` and `buff:s_gsub(...)` are both equivalent to `str:gsub(...)` (where `buff` is a Buffer and `str` is the Buffer's contents as a string).
 
@@ -53,7 +53,6 @@ Buffers define metamethods for equality (==), length (#), concatenation (..) and
 */
 
 #include <string.h>
-#include <stdio.h>
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -247,7 +246,7 @@ static void addsepstrings(Buffer *B) {
 		memcpy(b, str, len * sizeof(char));
 		addsize(B, len);
 
-		b = prepbuffsize(B, 0); /* The buffer already has space for the separator, we just need to get a pointer to the position after the string we copied */
+		b += len; /* Get a pointer to the position after the string */
 		memcpy(b, sep, seplen * sizeof(char));
 		addsize(B, seplen);
 	}
@@ -361,9 +360,7 @@ static int bufflib_concat(lua_State *L) {
 		memcpy(b, str1, len1 * sizeof(char)); /* Add the first string */
 		addsize(destbuff, len1);
 
-		/* The Buffer already has the required space for the second string,
-			we just need a pointer to the position after the first string */
-		b = prepbuffsize(destbuff, 0);
+		b += len1; /* Get a pointer to the position after the first string */
 		memcpy(b, str2, len2 * sizeof(char)); /* Add the second string */
 		addsize(destbuff, len2);
 
@@ -467,7 +464,7 @@ static int bufflib_stringop(lua_State *L){
 	
 	lua_pushvalue(L, lua_upvalueindex(1)); /* String function to call */
 	lua_pushlstring(L, B->b, B->n); /* Buffer contents as a string */
-	for (i = 2; i < numargs; i++){ /* Remaining arguments */
+	for (i = 2; i <= numargs; i++){ /* Remaining arguments */
 		lua_pushvalue(L, i);
 	}
 	
@@ -620,12 +617,13 @@ static struct luaL_Reg libreg[] = {
 
 EXPORT int luaopen_bufflib(lua_State *L) {
 	int strIndex, metaIndex, libIndex;
-	printf("open start\n");
-	luaL_newmetatable(L, BUFFERTYPE);
+	
+	luaL_newmetatable(L, BUFFERTYPE); /* Create the metatable */
 	luaL_setfuncs(L, metareg, 0);
 	lua_pushcfunction(L, bufflib_index);
 	lua_setfield(L, -2, "__index"); /* mt.__index = bufflib_index */
-	luaL_newlib(L, libreg);
+	
+	luaL_newlib(L, libreg); /* Create the library table */
 	lua_pushinteger(L, LUAL_BUFFERSIZE);
 	lua_setfield(L, -2, "buffersize");
 	
@@ -634,15 +632,15 @@ EXPORT int luaopen_bufflib(lua_State *L) {
 		lua_pop(L, 1);
 		return 1;
 	}
-	printf("string found\n");
+
 	strIndex = lua_gettop(L); /* lua_next probably won't like relative (negative) indices, so record the absolute index of the string table */
-	metaIndex = strIndex - 2;
+	metaIndex = strIndex - 2; /* Record the absolute values of the metatable and library table so we don't have to deal with relative indices in the loop */
 	libIndex = strIndex - 1;
 	
 	lua_pushnil(L);
 	while (lua_next(L, strIndex) != 0){
 		const char *newkey;
-		printf("loop entry\n");
+
 		if (lua_type(L, -2) != LUA_TSTRING || !lua_isfunction(L, -1)){ /* If the key isn't a string or the value isn't a function, pop the value and jump to the next pair */
 			lua_pop(L, 1);
 			continue;

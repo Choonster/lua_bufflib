@@ -65,7 +65,7 @@ The primary examples of this are the metamethods, which use the required metamet
 
 
 <p>In addition to the functions shown here, you can call any method from the global <code>string</code> table (not just functions from the string library) on a Buffer (either as a method or a function from the <code>bufflib</code> table) by prefixing the name with <code>s_</code>.
-When you call a Buffer method with the <code>s_</code> prefix, it behaves exactly the same as if you'd called the equivalent <code>string</code> function with the Buffer's contents as the first argument.</p>
+When you call a Buffer method with the <code>s_</code> prefix, it calls the equivalent <code>string</code> function with the Buffer's contents as the first argument followed by any other arguments supplied to the method. None of these methods modify the original Buffer.</p>
 
 <p>For example, <code>bufflib.s_gsub(buff, ...)</code> and <code>buff:s_gsub(...)</code> are both equivalent to <code>str:gsub(...)</code> (where <code>buff</code> is a Buffer and <code>str</code> is the Buffer's contents as a string).</p>
 
