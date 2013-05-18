@@ -53,6 +53,7 @@ Buffers define metamethods for equality (==), length (#), concatenation (..) and
 */
 
 #include <string.h>
+#include <stdio.h>
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -619,7 +620,7 @@ static struct luaL_Reg libreg[] = {
 
 EXPORT int luaopen_bufflib(lua_State *L) {
 	int strIndex, metaIndex, libIndex;
-
+	printf("open start\n");
 	luaL_newmetatable(L, BUFFERTYPE);
 	luaL_setfuncs(L, metareg, 0);
 	lua_pushcfunction(L, bufflib_index);
@@ -633,7 +634,7 @@ EXPORT int luaopen_bufflib(lua_State *L) {
 		lua_pop(L, 1);
 		return 1;
 	}
-	
+	printf("string found\n");
 	strIndex = lua_gettop(L); /* lua_next probably won't like relative (negative) indices, so record the absolute index of the string table */
 	metaIndex = strIndex - 2;
 	libIndex = strIndex - 1;
@@ -641,6 +642,7 @@ EXPORT int luaopen_bufflib(lua_State *L) {
 	lua_pushnil(L);
 	while (lua_next(L, strIndex) != 0){
 		const char *newkey;
+		printf("loop entry\n");
 		if (lua_type(L, -2) != LUA_TSTRING || !lua_isfunction(L, -1)){ /* If the key isn't a string or the value isn't a function, pop the value and jump to the next pair */
 			lua_pop(L, 1);
 			continue;
