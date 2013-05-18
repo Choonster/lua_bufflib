@@ -43,6 +43,12 @@ assert(tostring(bufflib.new(teststr, testtab) .. bufflib.new(testfunc)) == (test
 do
 	local buffstr = tostring(bufflib.new(testlongstr, testfunc) .. bufflib.new(teststr, testtab))
 	local resstr = testlongstr .. testfuncstr .. teststr .. testtabstr
+	for i = 1, math.max(#buffstr, #resstr) do
+		local buffchar, reschar = buffstr:sub(i, i), resstr:sub(i, i)
+		if buffchar ~= reschar then
+			print(("Position %d: %s ~= %s"):format(i, tostring(buffchar), tostring(reschar)))
+		end
+	end
 	assert(buffstr == resstr, ("concatenation (buffer(long string, function) .. buffer(string, table)) failed -- %q (len %d) ~= %q (len %d)"):format(buffstr:sub(1, 25) .. "..." .. buffstr:sub(-25), #buffstr, resstr:sub(1, 25) .. "..." .. resstr:sub(-25), #resstr))
 end
 
