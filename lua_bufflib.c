@@ -460,16 +460,17 @@ static int bufflib_isbuffer(lua_State *L){
 static int bufflib_stringop(lua_State *L){
 	Buffer *B = getbuffer(L, 1);
 	int numargs = lua_gettop(L);
-	int i;
+	
+	lua_remove(L, 1); /* Remove the Buffer from the stack */
 	
 	lua_pushvalue(L, lua_upvalueindex(1)); /* String function to call */
-	lua_pushlstring(L, B->b, B->n); /* Buffer contents as a string */
-	for (i = 2; i <= numargs; i++){ /* Remaining arguments */
-		lua_pushvalue(L, i);
-	}
+	lua_insert(L, 1); /* Insert it before the arguments */
 	
-	lua_call(L, numargs, LUA_MULTRET);
-	return lua_gettop(L) - numargs;
+	lua_pushlstring(L, B->b, B->n); /* Buffer contents as a string */
+	lua_insert(L, 2); /* Insert it between the function and the arguments */
+	
+	lua_call(L, numargs, LUA_MULTRET); /* Call the function */
+	return lua_gettop(L); /* The function's return values are the only values on the stack, we return them all from this function */
 }
 
 /*
