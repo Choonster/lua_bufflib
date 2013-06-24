@@ -5,6 +5,16 @@ VSProj/*/*.*
 *.exp
 *.lib
 
+# libtool build results
+.libs/*
+*.la
+*.lo
+*.o
+*.so
+
+# Backup files
+*~
+
 #################
 ## Eclipse
 #################
